@@ -9,7 +9,7 @@
  * tarayıcı eski önbelleği silip yenisini indirir.
  * ========================================================= */
 
-var SURUM = 'su-rotasi-v1';
+var SURUM = 'su-rotasi-v2';
 var UYGULAMA_ONBELLEK = SURUM + '-uygulama';
 var KARO_ONBELLEK = SURUM + '-karo';
 var KARO_SINIRI = 1200;   // yaklaşık 20-30 MB

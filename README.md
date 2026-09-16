@@ -137,6 +137,11 @@ bağlamak" yanlış sonuç verir. Bunun yerine (`rota.js`):
   uygulama dönüş adımına geçer.
 - Yön tahmini üst üste tutmazsa (çok gürültülü GPS) yön filtresi geçici olarak
   devre dışı kalır, böylece uygulama takılıp kalmaz.
+- **Araç oku ham GPS noktasına değil, eşleşen rota noktasına oturtulur** ("snap").
+  GPS'in 5-15 m'lik hatası yüzünden okun sokağın yanında görünmesini engeller.
+  Rotadan çıkıldığında ham konum gösterilir (ok kırmızıya döner), çünkü orada
+  sürücünün gerçekte nerede olduğunu görmesi gerekir. Sürüş kaydı (GPX) ve notlar
+  her zaman **ham** konumu saklar.
 
 ### Sesli yönlendirme
 

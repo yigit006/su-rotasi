@@ -285,10 +285,15 @@
             (a.pts[i][0] + a.pts[i + 1][0]) / 2,
             (a.pts[i][1] + a.pts[i + 1][1]) / 2
           ];
+          // Metin karakteri yerine SVG: yazı tipine göre kayma olmaz,
+          // ok tam olarak çizginin üstünde durur.
           var ikon = L.divIcon({
             className: 'rota-ok',
-            html: '<div style="transform:rotate(' + (a.parcaYon[i] - 90) + 'deg);color:' + renk + '">&#10148;</div>',
-            iconSize: [20, 20], iconAnchor: [10, 10]
+            html: '<svg width="22" height="22" viewBox="0 0 22 22" style="transform:rotate(' +
+              a.parcaYon[i].toFixed(1) + 'deg)">' +
+              '<polygon points="11,3 18,19 11,15.5 4,19" fill="' + renk +
+              '" stroke="rgba(255,255,255,.7)" stroke-width="1.1" stroke-linejoin="round"/></svg>',
+            iconSize: [22, 22], iconAnchor: [11, 11]
           });
           self.okIsaretleri.push(L.marker(orta, { icon: ikon, interactive: false }).addTo(self.map));
         }
@@ -514,7 +519,11 @@
       sonCizilenAdim = takipci.adimIndex;
       Harita.adimlariCiz(rota, takipci.adimIndex);
     }
-    if (sonKonum) Harita.konumGuncelle(sonKonum.lat, sonKonum.lon, takipci.yon);
+    if (!sonKonum) return;
+    // Araç oku ham GPS noktasına değil, rotaya oturtulmuş noktaya konur.
+    var g = takipci.gosterilecekKonum(sonKonum.lat, sonKonum.lon);
+    Harita.konumGuncelle(g.lat, g.lon, g.yon);
+    $('arac').classList.toggle('hamKonum', !g.oturmus);
   }
 
   /* =======================================================

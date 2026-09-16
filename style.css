@@ -140,7 +140,9 @@ body {
 }
 #arac svg { width: 100%; height: 100%; }
 #arac polygon { fill: var(--mavi); stroke: #fff; stroke-width: 2.5; }
-#arac.rotaDisi polygon { fill: var(--kirmizi); }
+/* Konum rotaya oturtulamadıysa (ham GPS) daha soluk gösterilir */
+#arac.hamKonum polygon { fill: #9fc6ff; stroke: #cfe2ff; }
+#arac.rotaDisi polygon { fill: var(--kirmizi); stroke: #fff; }
 
 #haritaRozet {
   position: absolute; left: 10px; top: 10px; z-index: 500;
@@ -156,11 +158,8 @@ body {
 .harita-btn.aktif { border-color: var(--sari); color: var(--sari); }
 
 /* Rota çizgileri üzerindeki yön okları */
-.rota-ok {
-  color: #0b0c0e;
-  font-size: 20px; line-height: 1;
-  text-shadow: 0 0 3px rgba(255,255,255,.85);
-}
+.rota-ok { line-height: 0; }
+.rota-ok svg { display: block; transform-origin: 50% 50%; }
 
 /* ---------------- Alt bant ---------------- */
 #altBant {

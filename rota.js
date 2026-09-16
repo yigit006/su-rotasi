@@ -201,6 +201,7 @@
     this.zayifSinyal = false;
     this.bitti = false;
     this.snapXY = null;        // rotaya oturtulmuş konum (düzlem)
+    this.snapYon = null;       // eşleşilen yol parçasının yönü
     this.takilmaSayaci = 0;    // üst üste aday bulunamayan güncelleme sayısı
     this.yonFiltresiKapali = false;
   };
@@ -323,6 +324,7 @@
 
     this.uzaklik = enIyi.uzaklik;
     this.snapXY = [enIyi.x, enIyi.y];
+    this.snapYon = enIyi.yon;
 
     // Zayıf sinyalde veya rotadan uzaktayken ilerletme yok.
     var ilerletilebilir = !this.zayifSinyal && enIyi.uzaklik <= a.rotaDisiM;
@@ -354,6 +356,16 @@
       if (this.adimIndex === enIyi.adimIndex) {
         this.mesafe = enIyi.mesafe;
         this.uzaklik = enIyi.uzaklik;
+        this.snapXY = [enIyi.x, enIyi.y];
+        this.snapYon = enIyi.yon;
+      } else {
+        // Ara adımda durulduysa gösterilecek noktayı o adıma göre tazele
+        var ara = this._tekAday(this.adimIndex, px, py, false);
+        if (ara) {
+          this.uzaklik = ara.uzaklik;
+          this.snapXY = [ara.x, ara.y];
+          this.snapYon = ara.yon;
+        }
       }
     }
 
@@ -407,6 +419,21 @@
       this.rotaDisiBaslangic = null;
       this.rotaDisi = false;
     }
+  };
+
+  /**
+   * Ekranda gösterilecek konum.
+   * Eşleşme iyiyse ham GPS noktası yerine rotaya oturtulmuş nokta döner —
+   * navigasyon uygulamalarının "snap" davranışı; aksi halde GPS hatası
+   * yüzünden araç oku sokağın yanında görünür.
+   * Rota dışındayken ham konum döner ki sürücü gerçekten nerede olduğunu görsün.
+   */
+  Takipci.prototype.gosterilecekKonum = function (hamLat, hamLon) {
+    if (!this.rotaDisi && this.snapXY && this.uzaklik <= this.ayar.rotaDisiM) {
+      var ll = this.rota.proj.latlon(this.snapXY[0], this.snapXY[1]);
+      return { lat: ll[0], lon: ll[1], yon: this.snapYon, oturmus: true };
+    }
+    return { lat: hamLat, lon: hamLon, yon: this.yon, oturmus: false };
   };
 
   /** Elle bir adım ileri/geri (GPS yanılırsa) */

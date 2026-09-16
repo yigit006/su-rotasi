@@ -144,6 +144,39 @@ hepsi &= kosu({ ad: 'heading yok + gurultu (3 m/tik, 6 m)    ', adimM: 3, gurult
   hepsi &= !!(sapti && iyilesti && hedef);
 })();
 
+/* Snap testi: gurultulu GPS'te ekranda gosterilen konum rotanin uzerinde olmali */
+(function snapTesti() {
+  var t = new Rota.Takipci(rota);
+  var rnd = rasgele(31337);
+  var zaman = 0, hamToplam = 0, snapToplam = 0, adet = 0, oturmayan = 0;
+  for (var m = 0; m < 6000; m += 5) {
+    zaman += 600;
+    var k = rotadaKonum(m);
+    var p = rota.proj.xy(k.lat, k.lon);
+    var dx = (rnd() - 0.5) * 24, dy = (rnd() - 0.5) * 24;   // +-12 m gurultu
+    var ll = rota.proj.latlon(p[0] + dx, p[1] + dy);
+    t.konumGuncelle({ lat: ll[0], lon: ll[1], heading: k.yon, speed: 8, accuracy: 8, t: zaman });
+    var g = t.gosterilecekKonum(ll[0], ll[1]);
+    if (!g.oturmus) { oturmayan++; continue; }
+    // gosterilen noktanin rotaya uzakligi
+    var gp = rota.proj.xy(g.lat, g.lon);
+    var en = Infinity;
+    for (var i = Math.max(0, t.adimIndex - 1); i <= Math.min(rota.adimlar.length - 1, t.adimIndex + 1); i++) {
+      var iz = Rota.adimaIzdusur(rota.adimlar[i], gp[0], gp[1], null, 180);
+      if (iz && iz.uzaklik < en) en = iz.uzaklik;
+    }
+    snapToplam += en;
+    hamToplam += Math.hypot(dx, dy);
+    adet++;
+  }
+  var hamOrt = hamToplam / adet, snapOrt = snapToplam / adet;
+  var ok = snapOrt < 0.5 && hamOrt > 4;
+  console.log((ok ? '  GECTI  ' : '  KALDI  ') +
+    'snap: ham konum rotadan ort. ' + hamOrt.toFixed(1) + ' m sapiyor, ' +
+    'gosterilen konum ' + snapOrt.toFixed(2) + ' m (oturmayan ornek: ' + oturmayan + ')');
+  hepsi &= ok;
+})();
+
 /* Zayif GPS testi: accuracy 50 iken ilerletme olmamali */
 (function zayifTest() {
   var t = new Rota.Takipci(rota);
