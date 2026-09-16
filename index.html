@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0b0c0e">
+<meta name="description" content="Muttalip pazar su dağıtım rotası — sesli ve büyük ekranlı sürüş takibi">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>Su Rotası</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="gorseller/ikon-192.png">
+<link rel="apple-touch-icon" href="gorseller/ikon-192.png">
+<link rel="stylesheet" href="vendor/leaflet.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ================= YÜKLEME ================= -->
+<div id="yukleme">
+  <div class="yukleme-ic">
+    <div class="yukleme-baslik">SU ROTASI</div>
+    <div id="yuklemeDurum">Rota yükleniyor…</div>
+  </div>
+</div>
+
+<!-- ================= ÜST BANT ================= -->
+<header id="ustBant">
+  <div id="rozetSatir">
+    <span id="rozet" class="rozet rozet-gecis">SADECE GEÇİŞ</span>
+    <span id="durumIkon" class="durum-ikon" title="Konum durumu">●</span>
+  </div>
+
+  <div id="manevraKutu">
+    <svg id="ok" viewBox="0 0 100 100" aria-hidden="true"></svg>
+    <div id="manevraMetin">
+      <div id="mesafe">—</div>
+      <div id="talimat">Hazır</div>
+    </div>
+  </div>
+
+  <div id="uyariBant" hidden></div>
+</header>
+
+<!-- ================= HARİTA ================= -->
+<main id="haritaSarmal">
+  <div id="harita"></div>
+  <div id="arac" aria-hidden="true">
+    <svg viewBox="0 0 40 46"><polygon points="20,0 38,44 20,34 2,44" /></svg>
+  </div>
+  <div id="haritaRozet" hidden>Harita çevrimdışı</div>
+  <button id="btnKuzey" class="harita-btn" title="Kuzey / yön yukarı">⇧</button>
+</main>
+
+<!-- ================= ALT BANT ================= -->
+<footer id="altBant">
+  <div id="ilerlemeCubuk"><div id="ilerlemeDolgu"></div></div>
+  <div id="sayaclar">
+    <span id="adimYazi">Adım 1 / 219</span>
+    <span id="kmYazi">0,0 / 14,9 km</span>
+  </div>
+  <div id="butonlar">
+    <button id="btnBaslat" class="btn btn-ana">BAŞLAT</button>
+    <button id="btnGeri" class="btn btn-yan">◀ GERİ</button>
+    <button id="btnIleri" class="btn btn-yan">İLERİ ▶</button>
+  </div>
+  <div id="butonlar2">
+    <button id="btnNot" class="btn btn-kucuk">✎ NOT DÜŞ</button>
+    <button id="btnSes" class="btn btn-kucuk">🔊 SES</button>
+    <button id="btnMenu" class="btn btn-kucuk">☰ MENÜ</button>
+  </div>
+</footer>
+
+<!-- ================= MENÜ ================= -->
+<div id="menu" hidden>
+  <div id="menuIc">
+    <div class="menu-baslik">
+      <span>Menü</span>
+      <button id="btnMenuKapat" class="btn btn-kucuk">KAPAT ✕</button>
+    </div>
+
+    <section class="menu-bolum">
+      <h2>Simülasyon (evde test)</h2>
+      <p class="ipucu">GPS olmadan rotayı oynatır. Sesli komutlar da çalışır.</p>
+      <div class="secenekler">
+        <button class="btn btn-sec" data-sim="0">KAPALI</button>
+        <button class="btn btn-sec" data-sim="1">1x</button>
+        <button class="btn btn-sec" data-sim="5">5x</button>
+        <button class="btn btn-sec" data-sim="20">20x</button>
+      </div>
+    </section>
+
+    <section class="menu-bolum">
+      <h2>Rota</h2>
+      <button id="btnBaslangicaGit" class="btn btn-genis">📍 BAŞLANGICA YOL TARİFİ</button>
+      <button id="btnSifirla" class="btn btn-genis btn-tehlike">↺ İLERLEMEYİ SIFIRLA</button>
+    </section>
+
+    <section class="menu-bolum">
+      <h2>Notlar <span id="notSayisi" class="rozet-kucuk">0</span></h2>
+      <div id="notListesi" class="liste"></div>
+      <button id="btnNotPaylas" class="btn btn-genis">📤 NOTLARI PAYLAŞ</button>
+      <button id="btnNotTemizle" class="btn btn-genis btn-tehlike">NOTLARI SİL</button>
+    </section>
+
+    <section class="menu-bolum">
+      <h2>Sürüş kaydı</h2>
+      <p class="ipucu" id="izBilgi">Kayıt yok.</p>
+      <button id="btnGpx" class="btn btn-genis">📤 GPX OLARAK PAYLAŞ / İNDİR</button>
+      <button id="btnIzTemizle" class="btn btn-genis btn-tehlike">KAYDI SİL</button>
+    </section>
+
+    <section class="menu-bolum">
+      <h2>Bilgi</h2>
+      <p class="ipucu" id="bilgiMetin"></p>
+    </section>
+  </div>
+</div>
+
+<!-- ================= ONAY ================= -->
+<div id="onay" hidden>
+  <div id="onayIc">
+    <div id="onayMetin"></div>
+    <div class="onay-butonlar">
+      <button id="btnOnayHayir" class="btn btn-genis">VAZGEÇ</button>
+      <button id="btnOnayEvet" class="btn btn-genis btn-tehlike">EVET</button>
+    </div>
+  </div>
+</div>
+
+<div id="bildirim" hidden></div>
+
+<script src="vendor/leaflet.js"></script>
+<script src="rota.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+Uygulama ikonlarini buraya koyabilirsiniz:
+
+  ikon-192.png              192x192
+  ikon-512.png              512x512
+  ikon-maskable-512.png     512x512 (kenarlarda bosluk birakan tasarim)
+
+Su an klasordeki dosyalar gecici olarak uretilmistir; ayni adlarla
+uzerine yazmaniz yeterli. Baska bir dosya adi kullanacaksaniz
+manifest.json icindeki adlari da guncelleyin.
